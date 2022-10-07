@@ -43,6 +43,9 @@ class MainFragmentAdapter(val onClickListener: OnClickListener) :
 
     override fun onBindViewHolder(holder: AsteroidViewHolder, position: Int) {
         val item = getItem(position)
+        holder.itemView.setOnClickListener {
+            onClickListener.onClick(item)
+        }
         holder.bind(item)
     }
 }
