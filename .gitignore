@@ -13,4 +13,4 @@
 .externalNativeBuild
 .cxx
 local.properties
-nasa_api_key.properties
+secrets.properties

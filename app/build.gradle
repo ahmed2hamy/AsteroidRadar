@@ -5,15 +5,34 @@ apply plugin: 'kotlin-kapt'
 apply plugin: 'androidx.navigation.safeargs'
 apply plugin: 'kotlin-android-extensions'
 
+File secretsFile = rootProject.file("secrets.properties")
+Properties secretsProperties = new Properties()
+
+if (secretsFile.exists()) {
+    secretsProperties.load(new FileInputStream(secretsFile))
+}
+
+
 android {
     compileSdkVersion 33
     defaultConfig {
+
         applicationId "com.udacity.asteroidradar"
         minSdkVersion 23
         targetSdkVersion 33
         versionCode 1
         versionName "1.0"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+
+        buildConfigField(
+                "String",
+                "API_KEY",
+                secretsProperties.getProperty(
+                        "API_KEY",
+                        System.getenv("API_KEY")
+                )
+        )
+
     }
     buildTypes {
         release {
