@@ -1,6 +1,6 @@
-package com.udacity.asteroidradar.api
+package com.udacity.asteroidradar.data.dataSources.remote
 
-import com.udacity.asteroidradar.Asteroid
+import com.udacity.asteroidradar.domain.entities.Asteroid
 import com.udacity.asteroidradar.Constants
 import org.json.JSONObject
 import java.text.SimpleDateFormat
@@ -56,4 +56,20 @@ private fun getNextSevenDaysFormattedDates(): ArrayList<String> {
     }
 
     return formattedDateList
+}
+
+fun getStartDate(): String {
+    val calendar = Calendar.getInstance()
+    return formatDate(calendar.time)
+}
+
+fun getEndDate(): String {
+    val calendar = Calendar.getInstance()
+    calendar.add(Calendar.DAY_OF_YEAR, 7)
+    return formatDate(calendar.time)
+}
+
+private fun formatDate(date: Date): String {
+    val dateFormat = SimpleDateFormat(Constants.API_QUERY_DATE_FORMAT, Locale.getDefault())
+    return dateFormat.format(date)
 }

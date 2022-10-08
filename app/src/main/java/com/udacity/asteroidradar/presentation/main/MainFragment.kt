@@ -1,4 +1,4 @@
-package com.udacity.asteroidradar.main
+package com.udacity.asteroidradar.presentation.main
 
 import android.os.Bundle
 import android.view.*
@@ -29,7 +29,7 @@ class MainFragment : Fragment() {
         })
 
         viewModel.navigateToAsteroidDetails.observe(viewLifecycleOwner, Observer {
-            if (it != null) {
+            if (null != it ) {
                 this.findNavController().navigate(MainFragmentDirections.actionShowDetail(it))
                 viewModel.displayAsteroidDetailsDone()
             }
