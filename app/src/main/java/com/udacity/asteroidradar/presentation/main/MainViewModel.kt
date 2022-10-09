@@ -43,10 +43,11 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
     }
 
     fun getWeekAsteroids() {
-        asteroidList = Transformations.map(
+        asteroidList = Transformations.switchMap(
             _asteroidsRepository.asteroids
         ) { asteroids ->
-            asteroids.filter {
+            val filteredAsteroids = MutableLiveData<List<Asteroid>>()
+            val filteredAsteroidsList = asteroids.filter {
                 val date = formatStringToDate(it.closeApproachDate)
 
                 val nextWeekDate = formatStringToDate(getNextWeekDate())
@@ -54,20 +55,26 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
                 date?.equals(Calendar.getInstance().time) == true || date?.before(
                     nextWeekDate
                 ) == true
+
             }
+            filteredAsteroids.value = filteredAsteroidsList
+            filteredAsteroids
         }
 
     }
 
     fun getTodayAsteroids() {
-        asteroidList = Transformations.map(
+        asteroidList = Transformations.switchMap(
             _asteroidsRepository.asteroids
         ) { asteroids ->
-            asteroids.filter {
+            val filteredAsteroids = MutableLiveData<List<Asteroid>>()
+            val filteredAsteroidsList = asteroids.filter {
                 val date = formatStringToDate(it.closeApproachDate)
 
                 date?.equals(Calendar.getInstance().time) == true
             }
+            filteredAsteroids.value = filteredAsteroidsList
+            filteredAsteroids
         }
     }
 
