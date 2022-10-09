@@ -26,8 +26,8 @@ interface NasaApiService {
 
     @GET("neo/rest/v1/feed")
     suspend fun getAsteroidsFeed(
-        @Query("start_date") startDate: String,
-        @Query("end_date") endDate: String,
+        @Query("start_date") startDate: String?,
+        @Query("end_date") endDate: String?,
         @Query("api_key") apiKey: String = Constants.API_KEY
     ):ResponseBody
 }

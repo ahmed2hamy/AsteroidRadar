@@ -50,6 +50,13 @@ class MainFragment : Fragment() {
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
+
+        when(item.itemId) {
+            R.id.week_asteroids -> viewModel.getWeekAsteroids()
+            R.id.today_asteroids -> viewModel.getTodayAsteroids()
+            else -> viewModel.getSavedAsteroids()
+        }
+
         return true
     }
 }

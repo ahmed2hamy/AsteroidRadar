@@ -5,8 +5,6 @@ import androidx.lifecycle.Transformations
 import com.udacity.asteroidradar.Constants
 import com.udacity.asteroidradar.data.dataSources.local.AsteroidsDatabase
 import com.udacity.asteroidradar.data.dataSources.remote.NasaApi
-import com.udacity.asteroidradar.data.dataSources.remote.getEndDate
-import com.udacity.asteroidradar.data.dataSources.remote.getStartDate
 import com.udacity.asteroidradar.data.dataSources.remote.parseAsteroidsJsonResult
 import com.udacity.asteroidradar.domain.entities.Asteroid
 import com.udacity.asteroidradar.domain.entities.asDatabaseModel
@@ -29,8 +27,8 @@ class AsteroidsRepository(
 
 
     suspend fun refreshAsteroids(
-        startDate: String = getStartDate(),
-        endDate: String = getEndDate()
+        startDate: String?,
+        endDate: String?
     ) {
         withContext(Dispatchers.IO) {
             val asteroidResponseBody: ResponseBody = nasaApi.retrofitService.getAsteroidsFeed(
@@ -40,6 +38,8 @@ class AsteroidsRepository(
 
             val asteroids: ArrayList<Asteroid> =
                 parseAsteroidsJsonResult(JSONObject(asteroidResponseBody.string()))
+
+            database.asteroidsDao.clearAsteroidsDatabase()
 
             database.asteroidsDao.insertAsteroidsToDatabase(asteroids.asDatabaseModel())
         }

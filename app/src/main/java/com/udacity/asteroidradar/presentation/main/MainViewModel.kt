@@ -6,24 +6,75 @@ import com.udacity.asteroidradar.data.dataSources.local.AsteroidsDatabase
 import com.udacity.asteroidradar.data.dataSources.remote.NasaApi
 import com.udacity.asteroidradar.data.repository.AsteroidsRepository
 import com.udacity.asteroidradar.domain.entities.Asteroid
+import com.udacity.asteroidradar.formatStringToDate
+import com.udacity.asteroidradar.getNextWeekDate
+import com.udacity.asteroidradar.getTodayDate
 import kotlinx.coroutines.launch
 import timber.log.Timber
+import java.util.*
 
 class MainViewModel(application: Application) : AndroidViewModel(application) {
+
+
+    // ViewModel Factory
+    class Factory(val app: Application) : ViewModelProvider.Factory {
+        override fun <T : ViewModel> create(modelClass: Class<T>): T {
+            if (modelClass.isAssignableFrom(MainViewModel::class.java)) {
+                @Suppress("UNCHECKED_CAST")
+                return MainViewModel(app) as T
+            }
+            throw IllegalArgumentException("Unable to construct ViewModel")
+        }
+    }
+
     private val _asteroidsDatabase = AsteroidsDatabase.getInstance(application)
 
     private val _asteroidsRepository = AsteroidsRepository(NasaApi, _asteroidsDatabase)
-    val asteroidList = _asteroidsRepository.asteroids
+    var asteroidList = _asteroidsRepository.asteroids
 
     private fun refreshAsteroids() {
         viewModelScope.launch {
             try {
-                _asteroidsRepository.refreshAsteroids()
+                _asteroidsRepository.refreshAsteroids(getTodayDate(), null)
             } catch (e: Exception) {
                 Timber.tag("AsteroidsRepositoryException").e(e)
             }
         }
     }
+
+    fun getWeekAsteroids() {
+        asteroidList = Transformations.map(
+            _asteroidsRepository.asteroids
+        ) { asteroids ->
+            asteroids.filter {
+                val date = formatStringToDate(it.closeApproachDate)
+
+                val nextWeekDate = formatStringToDate(getNextWeekDate())
+
+                date?.equals(Calendar.getInstance().time) == true || date?.before(
+                    nextWeekDate
+                ) == true
+            }
+        }
+
+    }
+
+    fun getTodayAsteroids() {
+        asteroidList = Transformations.map(
+            _asteroidsRepository.asteroids
+        ) { asteroids ->
+            asteroids.filter {
+                val date = formatStringToDate(it.closeApproachDate)
+
+                date?.equals(Calendar.getInstance().time) == true
+            }
+        }
+    }
+
+    fun getSavedAsteroids() {
+        asteroidList = _asteroidsRepository.asteroids
+    }
+
 
     init {
         refreshAsteroids()
@@ -40,15 +91,5 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
 
     fun displayAsteroidDetailsDone() {
         _navigateToAsteroidDetails.value = null
-    }
-
-    class Factory(val app: Application) : ViewModelProvider.Factory {
-        override fun <T : ViewModel> create(modelClass: Class<T>): T {
-            if (modelClass.isAssignableFrom(MainViewModel::class.java)) {
-                @Suppress("UNCHECKED_CAST")
-                return MainViewModel(app) as T
-            }
-            throw IllegalArgumentException("Unable to construct ViewModel")
-        }
     }
 }
