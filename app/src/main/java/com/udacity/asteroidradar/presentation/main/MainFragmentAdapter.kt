@@ -8,7 +8,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.udacity.asteroidradar.domain.entities.Asteroid
 import com.udacity.asteroidradar.databinding.AsteroidItemViewBinding
 
-class MainFragmentAdapter(val onClickListener: OnClickListener) :
+class MainFragmentAdapter(private val onClickListener: OnClickListener) :
     ListAdapter<Asteroid, MainFragmentAdapter.AsteroidViewHolder>(DiffCallback) {
 
 
