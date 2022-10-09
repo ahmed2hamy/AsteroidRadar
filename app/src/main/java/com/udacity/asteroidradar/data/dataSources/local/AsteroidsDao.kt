@@ -13,7 +13,7 @@ interface AsteroidsDao {
     suspend fun insertAsteroidsToDatabase(asteroids: List<AsteroidDatabaseEntity>)
 
     @Query(
-        "SELECT * FROM ${DatabaseConstants.asteroidsTableName} " +
+        "SELECT * FROM ${DatabaseConstants.asteroidsTableName}" +
                 "ORDER BY ${DatabaseConstants.closeApproachDate} ASC"
     )
     fun getAllAsteroidsFromDatabase(): LiveData<List<AsteroidDatabaseEntity>>

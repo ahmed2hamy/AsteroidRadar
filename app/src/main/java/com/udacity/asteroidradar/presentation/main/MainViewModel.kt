@@ -10,28 +10,23 @@ import kotlinx.coroutines.launch
 import timber.log.Timber
 
 class MainViewModel(application: Application) : AndroidViewModel(application) {
-    private val _asteroidList = MutableLiveData<List<Asteroid>>()
-
-    val asteroidList: LiveData<List<Asteroid>>
-        get() = _asteroidList
-
     private val _asteroidsDatabase = AsteroidsDatabase.getInstance(application)
 
     private val _asteroidsRepository = AsteroidsRepository(NasaApi, _asteroidsDatabase)
+    val asteroidList = _asteroidsRepository.asteroids
 
     private fun refreshAsteroids() {
         viewModelScope.launch {
             try {
                 _asteroidsRepository.refreshAsteroids()
-            }catch (e: Exception){
-                Timber.e("AsteroidsRepositoryException: $e")
+            } catch (e: Exception) {
+                Timber.tag("AsteroidsRepositoryException").e(e)
             }
         }
     }
 
     init {
         refreshAsteroids()
-        _asteroidList.value = _asteroidsRepository.asteroids.value
     }
 
     private val _navigateToAsteroidDetails = MutableLiveData<Asteroid?>()
