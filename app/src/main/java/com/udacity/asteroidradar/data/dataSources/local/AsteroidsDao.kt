@@ -18,6 +18,12 @@ interface AsteroidsDao {
     )
     fun getAllAsteroidsFromDatabase(): LiveData<List<AsteroidDatabaseEntity>>
 
+    @Query(
+        "SELECT * FROM ${DatabaseConstants.asteroidsTableName} " +
+                "WHERE ${DatabaseConstants.closeApproachDate} LIKE :dateString"
+    )
+    fun getAsteroidsFromDateFromDatabase(dateString: String): LiveData<List<AsteroidDatabaseEntity>>
+
     @Query("Delete from ${DatabaseConstants.asteroidsTableName}")
     suspend fun clearAsteroidsDatabase()
 }

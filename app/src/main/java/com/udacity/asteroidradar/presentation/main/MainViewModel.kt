@@ -6,12 +6,9 @@ import com.udacity.asteroidradar.data.dataSources.local.AsteroidsDatabase
 import com.udacity.asteroidradar.data.dataSources.remote.NasaApi
 import com.udacity.asteroidradar.data.repository.AsteroidsRepository
 import com.udacity.asteroidradar.domain.entities.Asteroid
-import com.udacity.asteroidradar.formatStringToDate
-import com.udacity.asteroidradar.getNextWeekDate
 import com.udacity.asteroidradar.getTodayDate
 import kotlinx.coroutines.launch
 import timber.log.Timber
-import java.util.*
 
 class MainViewModel(application: Application) : AndroidViewModel(application) {
 
@@ -30,7 +27,9 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
     private val _asteroidsDatabase = AsteroidsDatabase.getInstance(application)
 
     private val _asteroidsRepository = AsteroidsRepository(NasaApi, _asteroidsDatabase)
-    var asteroidList = _asteroidsRepository.asteroids
+
+    var asteroidList: LiveData<List<Asteroid>> = _asteroidsRepository.getAllAsteroids()
+
 
     private fun refreshAsteroids() {
         viewModelScope.launch {
@@ -42,44 +41,12 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
         }
     }
 
-    fun getWeekAsteroids() {
-        asteroidList = Transformations.switchMap(
-            _asteroidsRepository.asteroids
-        ) { asteroids ->
-            val filteredAsteroids = MutableLiveData<List<Asteroid>>()
-            val filteredAsteroidsList = asteroids.filter {
-                val date = formatStringToDate(it.closeApproachDate)
-
-                val nextWeekDate = formatStringToDate(getNextWeekDate())
-
-                date?.equals(Calendar.getInstance().time) == true || date?.before(
-                    nextWeekDate
-                ) == true
-
-            }
-            filteredAsteroids.value = filteredAsteroidsList
-            filteredAsteroids
-        }
-
+    fun getAllAsteroids(){
+        asteroidList = _asteroidsRepository.getAllAsteroids()
     }
 
-    fun getTodayAsteroids() {
-        asteroidList = Transformations.switchMap(
-            _asteroidsRepository.asteroids
-        ) { asteroids ->
-            val filteredAsteroids = MutableLiveData<List<Asteroid>>()
-            val filteredAsteroidsList = asteroids.filter {
-                val date = formatStringToDate(it.closeApproachDate)
-
-                date?.equals(Calendar.getInstance().time) == true
-            }
-            filteredAsteroids.value = filteredAsteroidsList
-            filteredAsteroids
-        }
-    }
-
-    fun getSavedAsteroids() {
-        asteroidList = _asteroidsRepository.asteroids
+    fun getTodayAsteroids(){
+        asteroidList = _asteroidsRepository.getTodayAsteroids(getTodayDate())
     }
 
 

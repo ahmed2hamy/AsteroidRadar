@@ -7,7 +7,4 @@
     <item
         android:id="@+id/today_asteroids"
         android:title="@string/today_asteroids" />
-    <item
-        android:id="@+id/saved_asteroids"
-        android:title="@string/saved_asteroids" />
 </menu>
