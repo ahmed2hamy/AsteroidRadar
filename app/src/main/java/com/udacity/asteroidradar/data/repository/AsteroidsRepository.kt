@@ -7,6 +7,7 @@ import com.udacity.asteroidradar.data.dataSources.local.AsteroidsDatabase
 import com.udacity.asteroidradar.data.dataSources.remote.NasaApi
 import com.udacity.asteroidradar.data.dataSources.remote.parseAsteroidsJsonResult
 import com.udacity.asteroidradar.domain.entities.Asteroid
+import com.udacity.asteroidradar.domain.entities.PictureOfDay
 import com.udacity.asteroidradar.domain.entities.asDatabaseModel
 import com.udacity.asteroidradar.domain.entities.asDomainModel
 import kotlinx.coroutines.Dispatchers
@@ -19,13 +20,19 @@ class AsteroidsRepository(
     private val database: AsteroidsDatabase
 ) {
 
-    fun getAllAsteroids(): LiveData<List<Asteroid>> = Transformations.map(
+    suspend fun getPictureOfDayLiveData(): LiveData<PictureOfDay> = Transformations.map(
+        database.asteroidsDao.getPictureOfDayFromDatabase()
+    ) {
+        it.asDomainModel()
+    }
+
+    fun getAllAsteroidsLiveData(): LiveData<List<Asteroid>> = Transformations.map(
         database.asteroidsDao.getAllAsteroidsFromDatabase()
     ) {
         it.asDomainModel()
     }
 
-    fun getTodayAsteroids(todayDate: String): LiveData<List<Asteroid>> = Transformations.map(
+    fun getTodayAsteroidsLiveData(todayDate: String): LiveData<List<Asteroid>> = Transformations.map(
         database.asteroidsDao.getAsteroidsFromDateFromDatabase(todayDate)
     ) {
         it.asDomainModel()
@@ -45,9 +52,20 @@ class AsteroidsRepository(
             val asteroids: ArrayList<Asteroid> =
                 parseAsteroidsJsonResult(JSONObject(asteroidResponseBody.string()))
 
-            database.asteroidsDao.clearAsteroidsDatabase()
+            database.asteroidsDao.clearAsteroidsTable()
 
             database.asteroidsDao.insertAsteroidsToDatabase(asteroids.asDatabaseModel())
+        }
+    }
+
+    suspend fun getPictureOfDay() {
+        withContext(Dispatchers.IO) {
+            val picture: PictureOfDay = nasaApi.retrofitService.getPictureOfDay(
+                Constants.API_KEY
+            )
+            database.asteroidsDao.clearPictureOfDayTable()
+
+            database.asteroidsDao.insertPictureOfDayToDatabase(picture.asDatabaseModel())
         }
     }
 }

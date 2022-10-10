@@ -28,7 +28,7 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
 
     private val _asteroidsRepository = AsteroidsRepository(NasaApi, _asteroidsDatabase)
 
-    var asteroidList: LiveData<List<Asteroid>> = _asteroidsRepository.getAllAsteroids()
+    var asteroidList: LiveData<List<Asteroid>> = _asteroidsRepository.getAllAsteroidsLiveData()
 
 
     private fun refreshAsteroids() {
@@ -42,11 +42,11 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
     }
 
     fun getAllAsteroids(){
-        asteroidList = _asteroidsRepository.getAllAsteroids()
+        asteroidList = _asteroidsRepository.getAllAsteroidsLiveData()
     }
 
     fun getTodayAsteroids(){
-        asteroidList = _asteroidsRepository.getTodayAsteroids(getTodayDate())
+        asteroidList = _asteroidsRepository.getTodayAsteroidsLiveData(getTodayDate())
     }
 
 

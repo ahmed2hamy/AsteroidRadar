@@ -10,4 +10,7 @@ object DatabaseConstants {
     const val relativeVelocity = "relative_velocity"
     const val distanceFromEarth = "distance_from_earth"
     const val isPotentiallyHazardous = "is_potentially_hazardous"
+
+    const val pictureOfDayTableName = "picture_of_day_table"
+    const val mediaType = "media_type"
 }

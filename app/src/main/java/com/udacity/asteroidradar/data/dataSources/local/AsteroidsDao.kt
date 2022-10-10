@@ -10,7 +10,15 @@ import androidx.room.Query
 interface AsteroidsDao {
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insertPictureOfDayToDatabase(picture: PictureOfDayDatabaseEntity)
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertAsteroidsToDatabase(asteroids: List<AsteroidDatabaseEntity>)
+
+    @Query(
+        "SELECT * FROM ${DatabaseConstants.pictureOfDayTableName}"
+    )
+    fun getPictureOfDayFromDatabase(): LiveData<PictureOfDayDatabaseEntity>
 
     @Query(
         "SELECT * FROM ${DatabaseConstants.asteroidsTableName} " +
@@ -25,5 +33,8 @@ interface AsteroidsDao {
     fun getAsteroidsFromDateFromDatabase(dateString: String): LiveData<List<AsteroidDatabaseEntity>>
 
     @Query("Delete from ${DatabaseConstants.asteroidsTableName}")
-    suspend fun clearAsteroidsDatabase()
+    suspend fun clearAsteroidsTable()
+
+    @Query("Delete from ${DatabaseConstants.pictureOfDayTableName}")
+    suspend fun clearPictureOfDayTable()
 }

@@ -3,7 +3,7 @@ package com.udacity.asteroidradar.data.dataSources.remote
 import com.squareup.moshi.Moshi
 import com.squareup.moshi.kotlin.reflect.KotlinJsonAdapterFactory
 import com.udacity.asteroidradar.Constants
-import kotlinx.coroutines.Deferred
+import com.udacity.asteroidradar.domain.entities.PictureOfDay
 import okhttp3.ResponseBody
 import retrofit2.Retrofit
 import retrofit2.converter.moshi.MoshiConverterFactory
@@ -29,7 +29,13 @@ interface NasaApiService {
         @Query("start_date") startDate: String?,
         @Query("end_date") endDate: String?,
         @Query("api_key") apiKey: String = Constants.API_KEY
-    ):ResponseBody
+    ): ResponseBody
+
+    @GET("planetary")
+    suspend fun getPictureOfDay(
+        @Query("api_key")
+        apiKey: String = Constants.API_KEY,
+    ): PictureOfDay
 }
 
 object NasaApi {
