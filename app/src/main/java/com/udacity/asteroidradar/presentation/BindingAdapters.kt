@@ -10,7 +10,7 @@ import com.udacity.asteroidradar.domain.entities.Asteroid
 import com.udacity.asteroidradar.presentation.main.MainFragmentAdapter
 
 @BindingAdapter("asteroidsList")
-fun bindAsteroids(recyclerView: RecyclerView, data: List<Asteroid>?){
+fun bindAsteroids(recyclerView: RecyclerView, data: List<Asteroid>?) {
     val adapter = recyclerView.adapter as MainFragmentAdapter
     adapter.submitList(data)
 }
@@ -28,8 +28,12 @@ fun bindAsteroidStatusImage(imageView: ImageView, isHazardous: Boolean) {
 fun bindDetailsStatusImage(imageView: ImageView, isHazardous: Boolean) {
     if (isHazardous) {
         imageView.setImageResource(R.drawable.asteroid_hazardous)
+        imageView.contentDescription =
+            imageView.context.getString(R.string.potentially_hazardous_asteroid_image)
     } else {
         imageView.setImageResource(R.drawable.asteroid_safe)
+        imageView.contentDescription =
+            imageView.context.getString(R.string.not_hazardous_asteroid_image)
     }
 }
 
