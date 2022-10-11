@@ -10,6 +10,7 @@ import com.udacity.asteroidradar.domain.entities.Asteroid
 import com.udacity.asteroidradar.domain.entities.PictureOfDay
 import com.udacity.asteroidradar.domain.entities.asDatabaseModel
 import com.udacity.asteroidradar.domain.entities.asDomainModel
+import com.udacity.asteroidradar.getTodayDate
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import okhttp3.ResponseBody
@@ -20,22 +21,22 @@ class AsteroidsRepository(
     private val database: AsteroidsDatabase
 ) {
 
-    suspend fun getPictureOfDayLiveData(): LiveData<PictureOfDay> = Transformations.map(
+    fun getPictureOfDayLiveData(): LiveData<PictureOfDay> = Transformations.map(
         database.asteroidsDao.getPictureOfDayFromDatabase()
     ) {
-        it.asDomainModel()
+        it?.asDomainModel()
     }
 
     fun getAllAsteroidsLiveData(): LiveData<List<Asteroid>> = Transformations.map(
         database.asteroidsDao.getAllAsteroidsFromDatabase()
     ) {
-        it.asDomainModel()
+        it?.asDomainModel()
     }
 
     fun getTodayAsteroidsLiveData(todayDate: String): LiveData<List<Asteroid>> = Transformations.map(
         database.asteroidsDao.getAsteroidsFromDateFromDatabase(todayDate)
     ) {
-        it.asDomainModel()
+        it?.asDomainModel()
     }
 
 
@@ -58,14 +59,15 @@ class AsteroidsRepository(
         }
     }
 
-    suspend fun getPictureOfDay() {
+    suspend fun refreshPictureOfDay() {
         withContext(Dispatchers.IO) {
             val picture: PictureOfDay = nasaApi.retrofitService.getPictureOfDay(
                 Constants.API_KEY
             )
+
             database.asteroidsDao.clearPictureOfDayTable()
 
-            database.asteroidsDao.insertPictureOfDayToDatabase(picture.asDatabaseModel())
+            database.asteroidsDao.insertPictureOfDayToDatabase(picture.asDatabaseModel(getTodayDate()))
         }
     }
 }

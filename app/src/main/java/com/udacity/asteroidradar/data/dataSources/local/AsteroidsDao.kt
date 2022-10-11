@@ -16,7 +16,8 @@ interface AsteroidsDao {
     suspend fun insertAsteroidsToDatabase(asteroids: List<AsteroidDatabaseEntity>)
 
     @Query(
-        "SELECT * FROM ${DatabaseConstants.pictureOfDayTableName}"
+        "SELECT * FROM ${DatabaseConstants.pictureOfDayTableName} " +
+                "ORDER BY date DESC LIMIT 1"
     )
     fun getPictureOfDayFromDatabase(): LiveData<PictureOfDayDatabaseEntity>
 

@@ -31,7 +31,7 @@ interface NasaApiService {
         @Query("api_key") apiKey: String = Constants.API_KEY
     ): ResponseBody
 
-    @GET("planetary")
+    @GET("planetary/apod")
     suspend fun getPictureOfDay(
         @Query("api_key")
         apiKey: String = Constants.API_KEY,

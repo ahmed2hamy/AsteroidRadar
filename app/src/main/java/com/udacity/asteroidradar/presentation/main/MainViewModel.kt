@@ -6,6 +6,7 @@ import com.udacity.asteroidradar.data.dataSources.local.AsteroidsDatabase
 import com.udacity.asteroidradar.data.dataSources.remote.NasaApi
 import com.udacity.asteroidradar.data.repository.AsteroidsRepository
 import com.udacity.asteroidradar.domain.entities.Asteroid
+import com.udacity.asteroidradar.domain.entities.PictureOfDay
 import com.udacity.asteroidradar.getTodayDate
 import kotlinx.coroutines.launch
 import timber.log.Timber
@@ -24,33 +25,52 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
         }
     }
 
+
     private val _asteroidsDatabase = AsteroidsDatabase.getInstance(application)
 
     private val _asteroidsRepository = AsteroidsRepository(NasaApi, _asteroidsDatabase)
 
+
+    val pictureOfDay: LiveData<PictureOfDay> = _asteroidsRepository.getPictureOfDayLiveData()
+
+
     var asteroidList: LiveData<List<Asteroid>> = _asteroidsRepository.getAllAsteroidsLiveData()
 
 
-    private fun refreshAsteroids() {
+    private fun refreshPictureOfDay() {
         viewModelScope.launch {
             try {
-                _asteroidsRepository.refreshAsteroids(getTodayDate(), null)
+                _asteroidsRepository.refreshPictureOfDay()
+
             } catch (e: Exception) {
                 Timber.tag("AsteroidsRepositoryException").e(e)
             }
         }
     }
 
-    fun getAllAsteroids(){
+    private fun refreshAsteroids() {
+        viewModelScope.launch {
+            try {
+                _asteroidsRepository.refreshAsteroids(getTodayDate(), null)
+
+            } catch (e: Exception) {
+                Timber.tag("AsteroidsRepositoryException").e(e)
+            }
+        }
+    }
+
+    fun getAllAsteroids() {
         asteroidList = _asteroidsRepository.getAllAsteroidsLiveData()
     }
 
-    fun getTodayAsteroids(){
+    fun getTodayAsteroids() {
         asteroidList = _asteroidsRepository.getTodayAsteroidsLiveData(getTodayDate())
     }
 
 
     init {
+        refreshPictureOfDay()
+
         refreshAsteroids()
     }
 

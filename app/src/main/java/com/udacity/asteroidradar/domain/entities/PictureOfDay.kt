@@ -11,11 +11,12 @@ data class PictureOfDay(
 )
 
 
-fun PictureOfDay.asDatabaseModel(): PictureOfDayDatabaseEntity {
+fun PictureOfDay.asDatabaseModel(date: String): PictureOfDayDatabaseEntity {
     return PictureOfDayDatabaseEntity(
-        url = url,
         mediaType = mediaType,
         title = title,
+        url = url,
+        date = date,
     )
 }
 

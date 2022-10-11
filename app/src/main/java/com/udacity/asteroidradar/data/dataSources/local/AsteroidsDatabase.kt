@@ -1,10 +1,16 @@
 package com.udacity.asteroidradar.data.dataSources.local
 
 import android.content.Context
-import androidx.room.*
+import androidx.room.Database
+import androidx.room.Room
+import androidx.room.RoomDatabase
 
 
-@Database(entities = [AsteroidDatabaseEntity::class], version = 1,  exportSchema = false)
+@Database(
+    entities = [AsteroidDatabaseEntity::class, PictureOfDayDatabaseEntity::class],
+    version = 1,
+    exportSchema = false
+)
 abstract class AsteroidsDatabase : RoomDatabase() {
     abstract val asteroidsDao: AsteroidsDao
 
