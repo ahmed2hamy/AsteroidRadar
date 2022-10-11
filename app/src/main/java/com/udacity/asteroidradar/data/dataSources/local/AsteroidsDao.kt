@@ -23,15 +23,25 @@ interface AsteroidsDao {
 
     @Query(
         "SELECT * FROM ${DatabaseConstants.asteroidsTableName} " +
+                "WHERE ${DatabaseConstants.closeApproachDate} BETWEEN :startDate AND :endDate " +
                 "ORDER BY ${DatabaseConstants.closeApproachDate} ASC"
     )
-    fun getAllAsteroidsFromDatabase(): LiveData<List<AsteroidDatabaseEntity>>
+    fun getAsteroidsWithStartAndEndDatesFromDatabase(
+        startDate: String,
+        endDate: String
+    ): LiveData<List<AsteroidDatabaseEntity>>
 
     @Query(
         "SELECT * FROM ${DatabaseConstants.asteroidsTableName} " +
                 "WHERE ${DatabaseConstants.closeApproachDate} LIKE :dateString"
     )
-    fun getAsteroidsFromDateFromDatabase(dateString: String): LiveData<List<AsteroidDatabaseEntity>>
+    fun getAsteroidsInADayFromDatabase(dateString: String): LiveData<List<AsteroidDatabaseEntity>>
+
+    @Query(
+        "SELECT * FROM ${DatabaseConstants.asteroidsTableName} " +
+                "ORDER BY ${DatabaseConstants.closeApproachDate} ASC"
+    )
+    fun getAllAsteroidsFromDatabase(): LiveData<List<AsteroidDatabaseEntity>>
 
     @Query("Delete from ${DatabaseConstants.asteroidsTableName}")
     suspend fun clearAsteroidsTable()

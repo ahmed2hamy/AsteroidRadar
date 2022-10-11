@@ -27,14 +27,26 @@ class AsteroidsRepository(
         it?.asDomainModel()
     }
 
+
+    fun getAsteroidsWithStartAndEndDates(
+        startDate: String,
+        endDate: String
+    ): LiveData<List<Asteroid>> =
+        Transformations.map(
+            database.asteroidsDao.getAsteroidsWithStartAndEndDatesFromDatabase(startDate, endDate)
+        ) {
+            it?.asDomainModel()
+        }
+
+    fun getTodayAsteroidsLiveData(todayDate: String): LiveData<List<Asteroid>> =
+        Transformations.map(
+            database.asteroidsDao.getAsteroidsInADayFromDatabase(todayDate)
+        ) {
+            it?.asDomainModel()
+        }
+
     fun getAllAsteroidsLiveData(): LiveData<List<Asteroid>> = Transformations.map(
         database.asteroidsDao.getAllAsteroidsFromDatabase()
-    ) {
-        it?.asDomainModel()
-    }
-
-    fun getTodayAsteroidsLiveData(todayDate: String): LiveData<List<Asteroid>> = Transformations.map(
-        database.asteroidsDao.getAsteroidsFromDateFromDatabase(todayDate)
     ) {
         it?.asDomainModel()
     }
@@ -53,8 +65,6 @@ class AsteroidsRepository(
             val asteroids: ArrayList<Asteroid> =
                 parseAsteroidsJsonResult(JSONObject(asteroidResponseBody.string()))
 
-            database.asteroidsDao.clearAsteroidsTable()
-
             database.asteroidsDao.insertAsteroidsToDatabase(asteroids.asDatabaseModel())
         }
     }
@@ -64,8 +74,6 @@ class AsteroidsRepository(
             val picture: PictureOfDay = nasaApi.retrofitService.getPictureOfDay(
                 Constants.API_KEY
             )
-
-            database.asteroidsDao.clearPictureOfDayTable()
 
             database.asteroidsDao.insertPictureOfDayToDatabase(picture.asDatabaseModel(getTodayDate()))
         }

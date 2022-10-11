@@ -6,7 +6,9 @@ import com.udacity.asteroidradar.data.dataSources.local.AsteroidsDatabase
 import com.udacity.asteroidradar.data.dataSources.remote.NasaApi
 import com.udacity.asteroidradar.data.repository.AsteroidsRepository
 import com.udacity.asteroidradar.domain.entities.Asteroid
+import com.udacity.asteroidradar.domain.entities.AsteroidsFilter
 import com.udacity.asteroidradar.domain.entities.PictureOfDay
+import com.udacity.asteroidradar.getNextWeekDate
 import com.udacity.asteroidradar.getTodayDate
 import kotlinx.coroutines.launch
 import timber.log.Timber
@@ -34,7 +36,23 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
     val pictureOfDay: LiveData<PictureOfDay> = _asteroidsRepository.getPictureOfDayLiveData()
 
 
-    var asteroidList: LiveData<List<Asteroid>> = _asteroidsRepository.getAllAsteroidsLiveData()
+    private val _onAsteroidsFilterChanged = MutableLiveData(AsteroidsFilter.All)
+
+    fun onChangeFilter(filter: AsteroidsFilter) {
+        _onAsteroidsFilterChanged.postValue(filter)
+    }
+
+    var asteroidList = Transformations.switchMap(_onAsteroidsFilterChanged) {
+        when (it) {
+            AsteroidsFilter.Week -> _asteroidsRepository.getAsteroidsWithStartAndEndDates(
+                getTodayDate(),
+                getNextWeekDate()
+            )
+            AsteroidsFilter.Today -> _asteroidsRepository.getTodayAsteroidsLiveData(getTodayDate())
+
+            else -> _asteroidsRepository.getAllAsteroidsLiveData()
+        }
+    }
 
 
     private fun refreshPictureOfDay() {
@@ -57,14 +75,6 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
                 Timber.tag("AsteroidsRepositoryException").e(e)
             }
         }
-    }
-
-    fun getAllAsteroids() {
-        asteroidList = _asteroidsRepository.getAllAsteroidsLiveData()
-    }
-
-    fun getTodayAsteroids() {
-        asteroidList = _asteroidsRepository.getTodayAsteroidsLiveData(getTodayDate())
     }
 
 
