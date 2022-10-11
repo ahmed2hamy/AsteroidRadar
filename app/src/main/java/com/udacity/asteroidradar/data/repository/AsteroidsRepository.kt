@@ -78,4 +78,12 @@ class AsteroidsRepository(
             database.asteroidsDao.insertPictureOfDayToDatabase(picture.asDatabaseModel(getTodayDate()))
         }
     }
+
+    suspend fun clearDatabaseTables() {
+        withContext(Dispatchers.IO) {
+            database.asteroidsDao.clearPictureOfDayTable()
+
+            database.asteroidsDao.clearAsteroidsTable()
+        }
+    }
 }
